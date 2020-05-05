@@ -17,6 +17,12 @@
       "password": "pok",
       "email": "wshy@gmail.com",
       "id": "b30449e0-8ebc-11ea-b0f1-314ae2c9de76"
+    },
+    {
+      "name": "fisher",
+      "password": "pok",
+      "email": "hello@gmail.com",
+      "id": "d1ec49d0-8ec0-11ea-9200-ebaa3600c556"
     }
   ]
 }

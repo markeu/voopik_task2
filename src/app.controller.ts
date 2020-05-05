@@ -53,7 +53,7 @@ export class AppController {
   @Get('profile')
   async getUsers(@Req() req: any): Promise<JwtPayload>{
     const user = req.user;
-    
+
     return user;
   }
 

@@ -4,7 +4,6 @@ import * as FileAsync from 'lowdb/adapters/FileAsync';
 import * as uuid from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../guard/payload.interface';
-import { RegisterDto } from '../dto/register.dto';
 import { UserDto } from '../dto/user.dto';
 
 type DataStore = 'auths';
@@ -38,7 +37,12 @@ export class DatabaseService {
 
   async find(condition: object, dataStore: DataStore): Promise<any> {
     const user = await this.db.get(dataStore).find(condition).value();
-    
+    if (!user) {
+        throw new HttpException(
+          `You are not registered with us.`,
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
         // generate and sign token
         const token = this._createToken(user);
         return {
@@ -82,9 +86,8 @@ export class DatabaseService {
     return user;
   }
 
-  private _createToken({ name }: RegisterDto): any {
+  private _createToken({ name }: UserDto): any {
     const expiresIn = process.env.EXPIRESIN;
-
     const user: JwtPayload = { name };
     const accessToken = this.jwtService.sign(user);
     return {
