@@ -1,3 +1,16 @@
 {
-  "auths": []
+  "auths": [
+    {
+      "name": "Uchay M",
+      "password": "mickey",
+      "email": "uchayMark@gmail.com",
+      "id": "5ba53ee0-8e9c-11ea-ae36-a33a3f25cecf"
+    },
+    {
+      "name": "hillary",
+      "password": "pokemon",
+      "email": "phlls@gmail.com",
+      "id": "7acb07f0-8e9c-11ea-ba2c-f58ba8056ebd"
+    }
+  ]
 }
