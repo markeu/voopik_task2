@@ -1,7 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import * as lowdb from 'lowdb';
 import * as FileAsync from 'lowdb/adapters/FileAsync';
 import * as uuid from 'uuid';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from '../guard/payload.interface';
+import { RegisterDto } from '../dto/register.dto';
+import { UserDto } from '../dto/user.dto';
 
 type DataStore = 'auths';
 
@@ -9,7 +13,7 @@ type DataStore = 'auths';
 export class DatabaseService {
     private db: lowdb.LowdbAsync<any>;
 
-  constructor() {
+  constructor(private readonly jwtService: JwtService) {
     this.initDatabase('auths');
   }
 
@@ -27,9 +31,19 @@ export class DatabaseService {
     return getUsers;
   }
 
-  async find(condition: object, dataStore: DataStore): Promise<any> {
+  async findOne(condition: object, dataStore: DataStore): Promise<any> {
     const values = await this.db.get(dataStore).find(condition).value();
     return values;
+  }
+
+  async find(condition: object, dataStore: DataStore): Promise<any> {
+    const user = await this.db.get(dataStore).find(condition).value();
+        // generate and sign token
+        const token = this._createToken(user);
+        return {
+            user,
+            ...token,
+          };
   }
 
   async update(
@@ -57,5 +71,24 @@ export class DatabaseService {
     getData.push(record);
     await this.db.set(dataStore, getData).write();
     return record;
+  }
+
+  async validateUser(payload: JwtPayload, dataStore: DataStore): Promise<UserDto> {
+    const user = await this.findOne(payload, dataStore);
+    if (!user) {
+      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+    }
+    return user;
+  }
+
+  private _createToken({ name }: RegisterDto): any {
+    const expiresIn = process.env.EXPIRESIN;
+
+    const user: JwtPayload = { name };
+    const accessToken = this.jwtService.sign(user);
+    return {
+      expiresIn,
+      accessToken,
+    };
   }
 }

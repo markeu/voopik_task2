@@ -11,6 +11,12 @@
       "password": "pokemon",
       "email": "phlls@gmail.com",
       "id": "7acb07f0-8e9c-11ea-ba2c-f58ba8056ebd"
+    },
+    {
+      "name": "fisher",
+      "password": "pok",
+      "email": "wshy@gmail.com",
+      "id": "b30449e0-8ebc-11ea-b0f1-314ae2c9de76"
     }
   ]
 }

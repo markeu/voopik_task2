@@ -3,12 +3,16 @@ import {
   Get,
   Post,
   Body,
+  Req,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { DatabaseService } from './database/db.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { Roles } from './guard/roles.decorator';
+import { RolesGuard } from './guard/roles.guard';
 import { get } from 'http';
 import { async } from 'rxjs/internal/scheduler/async';
 
@@ -19,7 +23,7 @@ export class AppController {
   @Post('register')
   async register(@Body() body: RegisterDto) {
     const { email, name, password } = body;
-    const isUserExist = await this.databaseService.find({ email }, 'auths');
+    const isUserExist = await this.databaseService.findOne({ email }, 'auths');
     if (isUserExist) {
       throw new HttpException(
         `You are already registered with us.`,
@@ -45,9 +49,11 @@ export class AppController {
     return user;
   }
 
+  @UseGuards(RolesGuard)
   @Get('profile')
-  async getUsers(@Body() any){
-    const { name } = any;
+  @Roles('admin')
+  async getUsers(@Req() req: any){
+    const { name } = req;
     const user = await this.databaseService.find({ name }, 'auths');
     if (!user) {
       throw new HttpException(
