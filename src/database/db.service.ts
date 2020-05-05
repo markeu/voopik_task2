@@ -38,6 +38,7 @@ export class DatabaseService {
 
   async find(condition: object, dataStore: DataStore): Promise<any> {
     const user = await this.db.get(dataStore).find(condition).value();
+    
         // generate and sign token
         const token = this._createToken(user);
         return {

@@ -11,8 +11,8 @@ import {
 import { DatabaseService } from './database/db.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { Roles } from './guard/roles.decorator';
-import { RolesGuard } from './guard/roles.guard';
+import { JwtPayload } from './guard/payload.interface';
+import { AuthGuard } from '@nestjs/passport';
 import { get } from 'http';
 import { async } from 'rxjs/internal/scheduler/async';
 
@@ -49,21 +49,12 @@ export class AppController {
     return user;
   }
 
-  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard())
   @Get('profile')
-  @Roles('admin')
-  async getUsers(@Req() req: any){
-    const { name } = req;
-    const user = await this.databaseService.find({ name }, 'auths');
-    if (!user) {
-      throw new HttpException(
-        `User profile not found in the database.`,
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-
-    return user;
+  async getUsers(@Req() req: any): Promise<JwtPayload>{
+    const user = req.user;
     
+    return user;
   }
 
 
